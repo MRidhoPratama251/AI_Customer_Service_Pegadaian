@@ -4,6 +4,9 @@
 .env.production
 utils/app/.env
 
+# Dokumentasi
+*.docx
+
 # Python
 __pycache__/
 *.py[cod]
