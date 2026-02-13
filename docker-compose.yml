@@ -1,0 +1,121 @@
+version: '3.8'
+
+services:
+  # 1. Database Service
+  db:
+    image: postgres:15
+    container_name: gadai_db
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+    networks:
+      - gadai_network
+
+  # 2. Main Application Service (Backend + Frontend)
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: gadai_app
+    restart: always
+    ports:
+      - "2026:2026"
+    environment:
+      - DATABASE_URL=postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      - EMAIL_USER=${EMAIL_USER}
+      - EMAIL_PASSWORD=${EMAIL_PASSWORD}
+      - APPS_KEY=${APPS_KEY}
+    depends_on:
+      - db
+    networks:
+      - gadai_network
+
+  # 3. n8n Automation Service
+  n8n:
+    image: n8nio/n8n
+    container_name: gadai_n8n
+    restart: always
+    ports:
+      - "5679:5678"
+    environment:
+      - N8N_HOST=${N8N_HOST:-localhost}
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      - WEBHOOK_URL=https://${NGROK_DOMAIN}/
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_HOST=db
+      - DB_POSTGRESDB_PORT=5432
+      - DB_POSTGRESDB_DATABASE=${POSTGRES_DB}
+      - DB_POSTGRESDB_USER=${POSTGRES_USER}
+      - DB_POSTGRESDB_PASSWORD=${POSTGRES_PASSWORD}
+    volumes:
+      - n8n_data:/home/node/.n8n
+      # Mount workflows for easy import
+      - ./ai_agent_flow_n8n:/home/node/workflows
+    depends_on:
+      - db
+      - ollama
+    networks:
+      - gadai_network
+
+  # 4. Ngrok Tunneling Service
+  ngrok:
+    image: ngrok/ngrok:latest
+    container_name: gadai_ngrok
+    restart: always
+    command: http n8n:5678 --url=https://${NGROK_DOMAIN}
+    environment:
+      NGROK_AUTHTOKEN: ${NGROK_AUTHTOKEN}
+    depends_on:
+      - n8n
+    networks:
+      - gadai_network
+
+  # 5. Ollama AI Service
+  ollama:
+    image: ollama/ollama
+    container_name: gadai_ollama
+    restart: always
+    ports:
+      - "11435:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [ gpu ]
+    networks:
+      - gadai_network
+
+  # 6. Qdrant Vector Database
+  qdrant:
+    image: qdrant/qdrant
+    container_name: gadai_qdrant
+    restart: always
+    ports:
+      - "6335:6333"
+      - "6336:6334"
+    volumes:
+      - qdrant_data:/qdrant/storage
+    networks:
+      - gadai_network
+
+volumes:
+  postgres_data:
+  n8n_data:
+  ollama_data:
+  qdrant_data:
+
+
+networks:
+  gadai_network:
+    driver: bridge
