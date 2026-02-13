@@ -2,7 +2,7 @@
 
 Sistem AI Customer Service berbasis Telegram untuk layanan gadai barang elektronik dan emas, dilengkapi dengan dashboard admin untuk monitoring dan verifikasi pesanan.
 
-## 🏗️ Arsitektur Sistem
+## Arsitektur Sistem
 
 Aplikasi ini terdiri dari beberapa service dalam Docker:
 
@@ -13,14 +13,14 @@ Aplikasi ini terdiri dari beberapa service dalam Docker:
 - **Qdrant**: Vector database untuk RAG
 - **Ngrok**: Tunneling untuk webhook Telegram
 
-## 📋 Prerequisites
+## Prerequisites
 
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/) (Windows/Mac/Linux)
 - [Git](https://git-scm.com/downloads)
 - Akun [Ngrok](https://ngrok.com/) (gratis)
 - Akun [Ollama](https://ollama.com/) (untuk cloud models)
 
-## 🚀 Quick Start
+## Quick Start
 
 ### 1. Clone Repository
 
@@ -100,7 +100,7 @@ docker exec -it gadai_ollama ollama pull qwen3-vl:235b-instruct-cloud
 3. Pilih menu **"Import from File"**
 4. Browse ke `/home/node/workflows/ai_pegadaian.json` (sudah di-mount otomatis)
 
-## 🌐 Akses Aplikasi
+## Akses Aplikasi
 
 | Service | URL | Keterangan |
 |---------|-----|------------|
@@ -111,7 +111,7 @@ docker exec -it gadai_ollama ollama pull qwen3-vl:235b-instruct-cloud
 | **PostgreSQL** | `localhost:5433` | Database (port 5433) |
 | **Ollama API** | http://localhost:11435 | LLM API endpoint |
 
-## 🔧 Konfigurasi n8n
+## Konfigurasi n8n
 
 Setelah import workflow, update kredensial berikut di n8n:
 
@@ -122,7 +122,7 @@ Setelah import workflow, update kredensial berikut di n8n:
    - Port: `5432`
    - User/Password/Database: Sesuai `.env`
 
-## 📦 Struktur Project
+## Struktur Project
 
 ```
 .
@@ -146,7 +146,7 @@ Setelah import workflow, update kredensial berikut di n8n:
 └── README.md
 ```
 
-## 🛠️ Development
+## Development
 
 ### Update Frontend
 
@@ -185,7 +185,7 @@ docker-compose down
 docker-compose down -v
 ```
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### Port Already in Use
 
@@ -209,7 +209,7 @@ Pastikan `.env` sudah benar, lalu restart:
 docker-compose restart gadai_app
 ```
 
-## 🤝 Contributing
+## Contributing
 
 1. Fork repository
 2. Create feature branch (`git checkout -b feature/AmazingFeature`)
@@ -217,10 +217,10 @@ docker-compose restart gadai_app
 4. Push to branch (`git push origin feature/AmazingFeature`)
 5. Open Pull Request
 
-## 📄 License
+## License
 
 MIT License - Silakan digunakan untuk keperluan komersial maupun non-komersial.
 
-## 📧 Contact
+## Contact
 
 Project Link: [https://github.com/your-username/AI_Customer_Service_Pegadaian](https://github.com/your-username/AI_Customer_Service_Pegadaian)
